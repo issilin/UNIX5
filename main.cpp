@@ -146,13 +146,17 @@ void src(int *fds, int *controlFds, char *path) {
     fscanf(input, "%d %d", &rowSize, &size);
     double A[size], B[size];
     parseFile(input, A, B, &size);
-    for (int i = 0; i < 4; i++) {
+    int count = 0;
+    while (count != 4) {
         int channel = select(controlFds);
-        if (channel == -1) {
-            sleep(3);
-            i--;
+        if (channel != -1) {
+            sendData(count, fds[channel * 2 + 1], A, B, size, rowSize);
+            count++;
         }
-        sendData(i, fds[channel * 2 + 1], A, B, size, rowSize);
+        else{
+            sleep(3);
+        }
+
     }
 }
 
